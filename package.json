@@ -1,8 +1,9 @@
 {
-  "name": "bas-sdk",
+  "name": "@bnb-attestation-service/bas-sdk",
   "version": "0.0.7-alpha",
   "description": "Binance Attestation Service - TypeScript/JavaScript SDK",
   "author": "Monstea Yue",
+  "repository": "git@github.com:bnb-attestation-service/bas-sdk.git",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
