@@ -1,6 +1,6 @@
 "use client";
 
-import { BAS, SchemaEncoder, SchemaRegistry } from "tbas-sdk";
+import { BAS, SchemaEncoder, SchemaRegistry } from "@bnb-attestation-service/bas-sdk";
 import { useCallback, useEffect } from "react";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import { bscTestnet } from "wagmi/chains";

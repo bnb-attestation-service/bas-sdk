@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@bnb-attestation-service/bas-sdk':
+    specifier: 0.0.7-alpha
+    version: 0.0.7-alpha(typescript@5.3.3)
   i:
     specifier: ^0.3.7
     version: 0.3.7
@@ -20,9 +23,6 @@ dependencies:
   react-dom:
     specifier: ^18
     version: 18.2.0(react@18.2.0)
-  tbas-sdk:
-    specifier: 0.0.7-alpha
-    version: 0.0.7-alpha(typescript@5.3.3)
   wagmi:
     specifier: ^1.4.12
     version: 1.4.12(@types/react@18.2.45)(react-dom@18.2.0)(react@18.2.0)(typescript@5.3.3)(viem@1.21.0)
@@ -77,6 +77,25 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.14.1
+
+  /@bnb-attestation-service/bas-sdk@0.0.7-alpha(typescript@5.3.3):
+    resolution: {integrity: sha512-3FJ1ep5WFhBB3abHf9X31YL7A30mL5mwGd0v98nDEd9vcluo8/lX9b7AKiWg8oJo3IumNjcMK353sts5IdwmgQ==}
+    dependencies:
+      '@bnb-chain/greenfield-cosmos-types': 0.4.0
+      '@bnb-chain/greenfield-js-sdk': 0.2.5-alpha.9
+      '@bnb-chain/greenfield-zk-crypto': 1.0.0
+      '@ethereum-attestation-service/eas-sdk': 1.2.0-beta.0(typescript@5.3.3)
+      viem: 1.21.0(typescript@5.3.3)
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - encoding
+      - supports-color
+      - ts-node
+      - typescript
+      - utf-8-validate
+      - zod
+    dev: false
 
   /@bnb-chain/greenfield-cosmos-types@0.4.0:
     resolution: {integrity: sha512-E6biyuWjVSzJ8F5lCRQsc6LsM7bJAAPZCjuUSmDZnGoQSfA+GrRXVJ+as+aVeePB4+XmP2pxMrSoh0ajzNRpPQ==}
@@ -6849,25 +6868,6 @@ packages:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
     engines: {node: '>=6'}
     dev: true
-
-  /tbas-sdk@0.0.7-alpha(typescript@5.3.3):
-    resolution: {integrity: sha512-rLzMqkgwMSNUpLWJPAKo7bh8X5sS70NMCrjxB0y4nTY1WeEbb8xjriPe5qEVTWrh3f9Q8co7f4U/KBj1BCzPVg==}
-    dependencies:
-      '@bnb-chain/greenfield-cosmos-types': 0.4.0
-      '@bnb-chain/greenfield-js-sdk': 0.2.5-alpha.9
-      '@bnb-chain/greenfield-zk-crypto': 1.0.0
-      '@ethereum-attestation-service/eas-sdk': 1.2.0-beta.0(typescript@5.3.3)
-      viem: 1.21.0(typescript@5.3.3)
-    transitivePeerDependencies:
-      - bufferutil
-      - debug
-      - encoding
-      - supports-color
-      - ts-node
-      - typescript
-      - utf-8-validate
-      - zod
-    dev: false
 
   /text-encoding-utf-8@1.0.2:
     resolution: {integrity: sha512-8bw4MY9WjdsD2aMtO0OzOCY3pXGYNx2d2FfHRVUKkiCPDWjKuOlhLVASS+pD7VkLTVjW268LYJHwsnPFlBpbAg==}
