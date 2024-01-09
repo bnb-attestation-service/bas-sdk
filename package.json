@@ -1,6 +1,6 @@
 {
   "name": "@bnb-attestation-service/bas-sdk",
-  "version": "0.0.7-alpha",
+  "version": "0.0.8-alpha",
   "description": "Binance Attestation Service - TypeScript/JavaScript SDK",
   "author": "monstea",
   "repository": "git@github.com:bnb-attestation-service/bas-sdk.git",

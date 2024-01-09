@@ -29,43 +29,42 @@ pnpm add @bnb-attestation-service/bas-sdk
 
 ```html
 <head>
-  <script
-    src="https://unpkg.com/@bnb-chain/greenfiled-file-handle@0.2.1/dist/browser/umd/index.js"
-  ></script>
-  <script
-    src="https://unpkg.com/@bnb-chain/greenfiled-file-handle@0.2.1/dist/node/file-handle.wasm"
-  ></script>
+  <script src="https://unpkg.com/@bnb-chain/greenfiled-file-handle@0.2.1/dist/browser/umd/index.js"></script>
+  <script src="https://unpkg.com/@bnb-chain/greenfiled-file-handle@0.2.1/dist/node/file-handle.wasm"></script>
 </head>
 ```
+
 ## Using the BAS SDK
 
 To begin, we must import and initialize the library before exploring its functionality.
 
 ```jsx
-import { BAS, Offchain, SchemaEncoder, SchemaRegistry } from "@bnb-attestation-service/bas-sdk";
-import { ethers } from 'ethers';
+import {
+  BAS,
+  Offchain,
+  SchemaEncoder,
+  SchemaRegistry,
+} from "@bnb-attestation-service/bas-sdk";
+import { ethers } from "ethers";
 
-export const BASContractAddress = "0xC2679fBD37d54388Ce493F1DB75320D236e1815e";// Sepolia v0.26
+export const BASContractAddress = "0xC2679fBD37d54388Ce493F1DB75320D236e1815e"; // Sepolia v0.26
 
 // Initialize the sdk with the address of the BAS Schema contract address
 const bas = new BAS(BASContractAddress);
 
 // Gets a default provider (in production use something else like infura/alchemy)
-const provider = ethers.providers.getDefaultProvider(
-  "sepolia"
-);
+const provider = ethers.providers.getDefaultProvider("sepolia");
 
 // Connects an ethers style provider/signingProvider to perform read/write functions.
 // MUST be a signer to do write operations!
 bas.connect(provider);
-
 ```
 
 > If you want to use features related to GreenField, you need to init the client with your address.
 
 ```js
-  const gfClient = bas.greenFieldClient;
-  gfClient.init(address);
+const gfClient = bas.greenFieldClient;
+gfClient.init(address);
 ```
 
 ### Registering a Schema
@@ -87,7 +86,7 @@ const schemaRegistry = new SchemaRegistry(schemaRegistryContractAddress);
 schemaRegistry.connect(signer);
 
 const schema = "uint256 eventId, uint8 voteIndex";
-const resolverAddress = "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0";// Sepolia 0.26
+const resolverAddress = "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0"; // Sepolia 0.26
 const revocable = true;
 
 const transaction = await schemaRegistry.register({
@@ -98,7 +97,6 @@ const transaction = await schemaRegistry.register({
 
 // Optional: Wait for transaction to be validated
 await transaction.wait();
-
 ```
 
 Once you have registered a schema, you can utilize its UID to generate attestations that adhere to the designated structure.
@@ -144,12 +142,12 @@ import { BAS } from "@bnb-attestation-service/bas-sdk";
 const bas = new BAS(BASContractAddress);
 bas.connect(provider);
 
-const uid = "0xff08bbf3d3e6e0992fc70ab9b9370416be59e87897c3d42b20549901d2cccc3e";
+const uid =
+  "0xff08bbf3d3e6e0992fc70ab9b9370416be59e87897c3d42b20549901d2cccc3e";
 
 const attestation = await bas.getAttestation(uid);
 
 console.log(attestation);
-
 ```
 
 ### Output
@@ -191,11 +189,11 @@ The `attest` function enables you to confidently create an on-chain attestation 
 
 - `schema`: The unique identifier (UID) of the schema for which the attestation is being created.
 - `data`: An object that contains the following properties:
-    - `recipient`: The Ethereum address of the attestation recipient.
-    - `expirationTime`: A Unix timestamp that represents the expiration time of the attestation. You can set it to `0` for no expiration.
-    - `revocable`: A boolean value that indicates whether the attestation can be revoked or not.
-    - `refUID`: (Optional) The UID of a referenced attestation. If there is no reference, use `ZERO_BYTES32`.
-    - `data`: The encoded data for the attestation, which should be generated using the `SchemaEncoder` class.
+  - `recipient`: The Ethereum address of the attestation recipient.
+  - `expirationTime`: A Unix timestamp that represents the expiration time of the attestation. You can set it to `0` for no expiration.
+  - `revocable`: A boolean value that indicates whether the attestation can be revoked or not.
+  - `refUID`: (Optional) The UID of a referenced attestation. If there is no reference, use `ZERO_BYTES32`.
+  - `data`: The encoded data for the attestation, which should be generated using the `SchemaEncoder` class.
 
 This function gracefully returns a Promise that resolves to the UID of the newly created attestation.
 
@@ -212,14 +210,15 @@ const encodedData = schemaEncoder.encodeData([
   { name: "voteIndex", value: 1, type: "uint8" },
 ]);
 
-const schemaUID = "0xb16fa048b0d597f5a821747eba64efa4762ee5143e9a80600d0005386edfc995";
+const schemaUID =
+  "0xb16fa048b0d597f5a821747eba64efa4762ee5143e9a80600d0005386edfc995";
 
 const tx = await bas.attest({
   schema: schemaUID,
   data: {
     recipient: "0xFD50b031E778fAb33DfD2Fc3Ca66a1EeF0652165",
     expirationTime: 0,
-    revocable: true,// Be aware that if your schema is not revocable, this MUST be false
+    revocable: true, // Be aware that if your schema is not revocable, this MUST be false
     data: encodedData,
   },
 });
@@ -227,7 +226,6 @@ const tx = await bas.attest({
 const newAttestationUID = await tx.wait();
 
 console.log("New attestation UID:", newAttestationUID);
-
 ```
 
 ### Creating Off-chain Attestations without Saving to GreenField
@@ -249,25 +247,41 @@ const encodedData = schemaEncoder.encodeData([
 // Signer is an ethers.js Signer instance
 const signer = new ethers.Wallet(privateKey, provider);
 
-const offchainAttestation = await offchain.signOffchainAttestation({
-  recipient: '0xFD50b031E778fAb33DfD2Fc3Ca66a1EeF0652165',
-// Unix timestamp of when attestation expires. (0 for no expiration)
-  expirationTime: 0,
-// Unix timestamp of current time
-  time: 1671219636,
-  revocable: true,// Be aware that if your schema is not revocable, this MUST be false
-  version: 1,
-  nonce: 0,
-  schema: "0xb16fa048b0d597f5a821747eba64efa4762ee5143e9a80600d0005386edfc995",
-  refUID: '0x0000000000000000000000000000000000000000000000000000000000000000',
-  data: encodedData,
-}, signer);
-
+const offchainAttestation = await offchain.signOffchainAttestation(
+  {
+    recipient: "0xFD50b031E778fAb33DfD2Fc3Ca66a1EeF0652165",
+    // Unix timestamp of when attestation expires. (0 for no expiration)
+    expirationTime: 0,
+    // Unix timestamp of current time
+    time: 1671219636,
+    revocable: true, // Be aware that if your schema is not revocable, this MUST be false
+    version: 1,
+    nonce: 0,
+    schema:
+      "0xb16fa048b0d597f5a821747eba64efa4762ee5143e9a80600d0005386edfc995",
+    refUID:
+      "0x0000000000000000000000000000000000000000000000000000000000000000",
+    data: encodedData,
+  },
+  signer
+);
 ```
 
 This function will confidently generate an attestation object off-chain, which will be signed and contain the UID, signature, and attestation data. You can confidently share this object with the intended recipient or confidently store it for future use.
 
 ### Creating Off-chain Attestation and Saving to GreenField
+
+Before proceeding with this step, you will need to create a base bucket first.
+
+**_Create a BAS Bucket_**
+
+```js
+import { encodeAddrToBucketName } from "@bnb-attestation-service/bas-sdk";
+
+const provider = await connector?.getProvider({ chainId: chains[0].id });
+const buckectName = encodeAddrToBucketName(address);
+const res = await gfClient.createBucket(provider, buckectName);
+```
 
 To generate an off-chain attestation and save the result to GreenField Storage, you can confidently utilize the `attestOffChain` function offered by the BAS SDK. Here's an example:
 
@@ -328,12 +342,13 @@ Revoking an attestation can only happen from the issuer address.
 ```jsx
 const transaction = await bas.revoke({
   schema: "0x85500e806cf1e74844d51a20a6d893fe1ed6f6b0738b50e43d774827d08eca61",
-  data: { uid: "0x6776de8122c352b4d671003e58ca112aedb99f34c629a1d1fe3b332504e2943a" }
+  data: {
+    uid: "0x6776de8122c352b4d671003e58ca112aedb99f34c629a1d1fe3b332504e2943a",
+  },
 });
 
 // Optional: Wait for transaction to be validated
 await transaction.wait();
-
 ```
 
 ### Revoking Off-chain Attestations
@@ -346,13 +361,14 @@ import { BAS } from "@bnb-attestation-service/bas-sdk";
 const bas = new BAS(BASContractAddress);
 bas.connect(provider);
 
-const data = ethers.utils.formatBytes32String('0x6776de8122c352b4d671003e58ca112aedb99f34c629a1d1fe3b332504e2943a');
+const data = ethers.utils.formatBytes32String(
+  "0x6776de8122c352b4d671003e58ca112aedb99f34c629a1d1fe3b332504e2943a"
+);
 
 const transaction = await bas.revokeOffchain(data);
 
 // Optional: Wait for transaction to be validated
 await transaction.wait();
-
 ```
 
 ### Get offchain Attestation from GreenField
