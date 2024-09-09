@@ -9,6 +9,7 @@ import {
 
 export interface TransactionProvider {
   estimateGas: (tx: TransactionRequest) => Promise<bigint>;
+  getAddress: () => string;
 
   call: (tx: TransactionRequest) => Promise<string>;
   resolveName: (name: string) => Promise<null | string>;
@@ -51,7 +52,6 @@ export class Transaction<T> {
     this.waitCallback = waitCallback;
   }
 
-  // @ts-ignore
   @RequireSigner
   public async wait(confirmations?: number): Promise<T> {
     if (this.receipt) {

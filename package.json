@@ -22,6 +22,8 @@
     "@bnb-chain/greenfield-js-sdk": "0.2.5-alpha.9",
     "@bnb-chain/greenfield-zk-crypto": "^1.0.0",
     "@ethereum-attestation-service/eas-sdk": "1.2.0-beta.0",
+    "ethers": "^6.13.2",
+    "inquirer": "^10.2.2",
     "viem": "^1.21.0"
   },
   "devDependencies": {
