@@ -35,7 +35,7 @@ function CatchError(message: string) {
   };
 }
 
-export abstract class BaseContract {
+export class BaseContract {
   private abi: any;
   private contractAddress: Hex;
   private publicClient: PublicClient;
@@ -68,7 +68,7 @@ export abstract class BaseContract {
       address: this.contractAddress,
       abi: this.abi,
       functionName: params.functionName,
-      args: [],
+      args: params.args,
     });
     return value;
   }

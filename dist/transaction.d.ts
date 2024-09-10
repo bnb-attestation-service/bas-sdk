@@ -1,6 +1,7 @@
 import { BaseContract, ContractFactory, ContractTransaction, TransactionReceipt, TransactionRequest } from 'ethers';
 export interface TransactionProvider {
     estimateGas: (tx: TransactionRequest) => Promise<bigint>;
+    getAddress: () => string;
     call: (tx: TransactionRequest) => Promise<string>;
     resolveName: (name: string) => Promise<null | string>;
 }

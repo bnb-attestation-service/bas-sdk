@@ -1,4 +1,8 @@
-export const RequireSigner = (_target, _propertyKey, descriptor) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Base = exports.Transaction = exports.RequireSigner = void 0;
+const tslib_1 = require("tslib");
+const RequireSigner = (_target, _propertyKey, descriptor) => {
     const originalMethod = descriptor.value;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     descriptor.value = function (...args) {
@@ -11,7 +15,8 @@ export const RequireSigner = (_target, _propertyKey, descriptor) => {
     };
     return descriptor;
 };
-export class Transaction {
+exports.RequireSigner = RequireSigner;
+class Transaction {
     data;
     receipt;
     signer;
@@ -21,8 +26,6 @@ export class Transaction {
         this.signer = signer;
         this.waitCallback = waitCallback;
     }
-    // @ts-ignore
-    @RequireSigner
     async wait(confirmations) {
         if (this.receipt) {
             throw new Error(`Transaction already broadcast: ${this.receipt}`);
@@ -35,7 +38,11 @@ export class Transaction {
         return this.waitCallback(this.receipt);
     }
 }
-export class Base {
+exports.Transaction = Transaction;
+tslib_1.__decorate([
+    exports.RequireSigner
+], Transaction.prototype, "wait", null);
+class Base {
     contract;
     signer;
     constructor(factory, address, signer) {
@@ -60,4 +67,5 @@ export class Base {
         return (await provider.getNetwork()).chainId;
     }
 }
+exports.Base = Base;
 //# sourceMappingURL=transaction.js.map

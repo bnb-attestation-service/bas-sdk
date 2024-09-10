@@ -1,6 +1,7 @@
-import { BaseContract } from "../utils/base";
+import { BaseContract } from "../utils/baseContract";
 import abi from "../abi/manager.abi.json";
 import { Hex } from "viem";
+import { BigNumberish, BytesLike } from "ethers";
 
 export class BucketManager extends BaseContract {
   constructor(contractAddress: Hex, privateKey?: Hex) {
@@ -19,65 +20,65 @@ export class BucketManager extends BaseContract {
   - Get buckets created by manager contract  (`called by user`)
   - Get whether the manager contract create a user bucket (`called by user`)
   */
-  async createUserBucket() {
-    return await super.write({
+  async createUserBucket(executorData: BytesLike) {
+    return await this.write({
       functionName: "createUserBucket",
-      args: [],
+      args: [executorData],
     });
   }
 
-  async createSchemaBucket() {
-    return await super.write({
+  async createSchemaBucket(name: string, schemaId: Hex, executorData: BytesLike) {
+    return await this.write({
       functionName: "createSchemaBucket",
-      args: [],
+      args: [name, schemaId, executorData],
     });
   }
 
-  async createUserPolicy() {
-    return await super.write({
+  async createUserPolicy(data: BytesLike) {
+    return await this.write({
       functionName: "createUserPolicy",
-      args: [],
+      args: [data],
     });
   }
 
-  async createSchemaPolicy() {
-    return await super.write({
+  async createSchemaPolicy(name: string, schemaId: Hex, createPolicyData: BytesLike) {
+    return await this.write({
       functionName: "createSchemaPolicy",
-      args: [],
+      args: [name, schemaId, createPolicyData],
     });
   }
 
-  async transferOwnership() {
-    return await super.write({
+  async transferOwnership(address: Hex) {
+    return await this.write({
       functionName: "transferOwnership",
-      args: [],
+      args: [address],
     });
   }
 
-  async topUpBNB() {
-    return await super.write({
+  async topUpBNB(amount: BigNumberish) {
+    return await this.write({
       functionName: "topUpBNB",
-      args: [],
+      args: [amount],
     });
   }
 
-  async executeGreenfieldCommand() {
-    return await super.write({
-      functionName: "greenfieldCall",
-      args: [],
+  async executeGreenfieldCommand(msgTypes: number[], msgData: BytesLike[]) {
+    return await this.write({
+      functionName: "greenfieldExecutor",
+      args: [msgTypes, msgData],
     });
   }
 
-  async getBucketsCreatedByManagerContract() {
-    return await super.read({
-      functionName: "getBucketsCreatedByManagerContract",
-      args: [],
+  async getCreatedBuckets(index: BigNumberish) {
+    return await this.read({
+      functionName: "bucketNames",
+      args: [index],
     });
   }
 
-  async getWhetherTheManagerContractCreateAUserBucket() {
-    return await super.read({
-      functionName: "getWhetherTheManagerContractCreateAUserBucket",
+  async hasExistedBucket() {
+    return await this.read({
+      functionName: "basBucket",
       args: [],
     });
   }

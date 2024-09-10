@@ -1,7 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.encodeAddrToBucketName = exports.getOffchainAuthKeys = exports.getAllSps = exports.getSps = exports.selectSp = void 0;
 // import { hashMessage } from 'viem';
-import { hashMessage } from "viem";
-export const selectSp = async (client) => {
-    const finalSps = await getSps(client);
+const viem_1 = require("viem");
+const selectSp = async (client) => {
+    const finalSps = await (0, exports.getSps)(client);
     const selectIndex = Math.floor(Math.random() * finalSps.length);
     const secondarySpAddresses = [
         ...finalSps.slice(0, selectIndex),
@@ -17,13 +20,15 @@ export const selectSp = async (client) => {
     };
     return selectSpInfo;
 };
-export const getSps = async (client) => {
+exports.selectSp = selectSp;
+const getSps = async (client) => {
     const sps = await client.sp.getStorageProviders();
     const finalSps = (sps ?? []).filter((v) => v.endpoint.includes("nodereal"));
     return finalSps;
 };
-export const getAllSps = async (client) => {
-    const sps = await getSps(client);
+exports.getSps = getSps;
+const getAllSps = async (client) => {
+    const sps = await (0, exports.getSps)(client);
     return sps.map((sp) => {
         return {
             address: sp.operatorAddress,
@@ -32,10 +37,11 @@ export const getAllSps = async (client) => {
         };
     });
 };
+exports.getAllSps = getAllSps;
 /**
  * generate off-chain auth key pair and upload public key to sp
  */
-export const getOffchainAuthKeys = async (address, provider, client, _chainId) => {
+const getOffchainAuthKeys = async (address, provider, client, _chainId) => {
     if (_chainId === null) {
         throw new Error("chainId is null");
     }
@@ -50,7 +56,7 @@ export const getOffchainAuthKeys = async (address, provider, client, _chainId) =
         }
         return storageRes;
     }
-    const allSps = await getAllSps(client);
+    const allSps = await (0, exports.getAllSps)(client);
     const offchainAuthRes = await client.offchainauth.genOffChainAuthKeyPairAndUpload({
         sps: allSps,
         chainId,
@@ -65,8 +71,10 @@ export const getOffchainAuthKeys = async (address, provider, client, _chainId) =
     localStorage.setItem(address, JSON.stringify(offChainData));
     return offChainData;
 };
+exports.getOffchainAuthKeys = getOffchainAuthKeys;
 // hash string to hex
-export const encodeAddrToBucketName = (addr) => {
-    return `bas-${hashMessage(addr).substring(2, 42)}`;
+const encodeAddrToBucketName = (addr) => {
+    return `bas-${(0, viem_1.hashMessage)(addr).substring(2, 42)}`;
 };
+exports.encodeAddrToBucketName = encodeAddrToBucketName;
 //# sourceMappingURL=helper.js.map

@@ -1,12 +1,16 @@
-import { Client, PermissionTypes } from "@bnb-chain/greenfield-js-sdk";
-import { getOffchainAuthKeys, encodeAddrToBucketName } from "./helper";
-export const getSps = async (client) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.GreenFieldClient = exports.VisibilityType = exports.selectSp = exports.getAllSps = exports.getSps = void 0;
+const greenfield_js_sdk_1 = require("@bnb-chain/greenfield-js-sdk");
+const helper_1 = require("./helper");
+const getSps = async (client) => {
     const sps = await client.sp.getStorageProviders();
     const finalSps = (sps ?? []).filter((v) => v.endpoint.includes("nodereal"));
     return finalSps;
 };
-export const getAllSps = async (client) => {
-    const sps = await getSps(client);
+exports.getSps = getSps;
+const getAllSps = async (client) => {
+    const sps = await (0, exports.getSps)(client);
     return sps.map((sp) => {
         return {
             address: sp.operatorAddress,
@@ -15,8 +19,9 @@ export const getAllSps = async (client) => {
         };
     });
 };
-export const selectSp = async (client) => {
-    const finalSps = await getSps(client);
+exports.getAllSps = getAllSps;
+const selectSp = async (client) => {
+    const finalSps = await (0, exports.getSps)(client);
     const selectIndex = Math.floor(Math.random() * finalSps.length);
     const secondarySpAddresses = [
         ...finalSps.slice(0, selectIndex),
@@ -32,7 +37,8 @@ export const selectSp = async (client) => {
     };
     return selectSpInfo;
 };
-export var VisibilityType;
+exports.selectSp = selectSp;
+var VisibilityType;
 (function (VisibilityType) {
     VisibilityType[VisibilityType["VISIBILITY_TYPE_UNSPECIFIED"] = 0] = "VISIBILITY_TYPE_UNSPECIFIED";
     VisibilityType[VisibilityType["VISIBILITY_TYPE_PUBLIC_READ"] = 1] = "VISIBILITY_TYPE_PUBLIC_READ";
@@ -40,14 +46,14 @@ export var VisibilityType;
     /** VISIBILITY_TYPE_INHERIT - If the bucket Visibility is inherit, it's finally set to private. If the object Visibility is inherit, it's the same as bucket. */
     VisibilityType[VisibilityType["VISIBILITY_TYPE_INHERIT"] = 3] = "VISIBILITY_TYPE_INHERIT";
     VisibilityType[VisibilityType["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
-})(VisibilityType || (VisibilityType = {}));
+})(VisibilityType || (exports.VisibilityType = VisibilityType = {}));
 const BUCKET_NAME = "bas";
-export class GreenFieldClient {
+class GreenFieldClient {
     client;
     chainId = null;
     address = null;
     constructor(url, chainId) {
-        this.client = Client.create(url, chainId, {
+        this.client = greenfield_js_sdk_1.Client.create(url, chainId, {
             zkCryptoUrl: "https://unpkg.com/@bnb-chain/greenfield-zk-crypto@0.0.3/dist/node/zk-crypto.wasm",
         });
     }
@@ -59,11 +65,11 @@ export class GreenFieldClient {
     async createBucket(provider, bucketName = BUCKET_NAME) {
         if (!this.address || !this.chainId)
             return;
-        const spInfo = await selectSp(this.client);
+        const spInfo = await (0, exports.selectSp)(this.client);
         console.log("spInfo", spInfo);
         console.log("====>", this.address, provider, this.client, this.chainId);
         // const provider = await connector?.getProvider();
-        const offChainData = await getOffchainAuthKeys(this.address, provider, this.client, this.chainId);
+        const offChainData = await (0, helper_1.getOffchainAuthKeys)(this.address, provider, this.client, this.chainId);
         if (!offChainData) {
             alert("No offchain, please create offchain pairs first");
             return;
@@ -120,10 +126,10 @@ export class GreenFieldClient {
     async mirrorBucket(provider, bucketInfo) {
         if (!this.address || !this.chainId)
             return;
-        const spInfo = await selectSp(this.client);
+        const spInfo = await (0, exports.selectSp)(this.client);
         console.log("spInfo", spInfo);
         // const provider = await connector?.getProvider();
-        const offChainData = await getOffchainAuthKeys(this.address, provider, this.client, this.chainId);
+        const offChainData = await (0, helper_1.getOffchainAuthKeys)(this.address, provider, this.client, this.chainId);
         if (!offChainData) {
             alert("No offchain, please create offchain pairs first");
             return;
@@ -158,7 +164,7 @@ export class GreenFieldClient {
             alert("Please select a file or address");
             return;
         }
-        const offChainData = await getOffchainAuthKeys(this.address, provider, this.client, this.chainId);
+        const offChainData = await (0, helper_1.getOffchainAuthKeys)(this.address, provider, this.client, this.chainId);
         if (!offChainData) {
             console.log("No offchain, please create offchain pairs first");
             alert("No offchain, please create offchain pairs first");
@@ -171,7 +177,7 @@ export class GreenFieldClient {
         console.log("offChainData", offChainData);
         console.log("hashResult", hashResult);
         const tx = await this.client.object.createObject({
-            bucketName: encodeAddrToBucketName(this.address),
+            bucketName: (0, helper_1.encodeAddrToBucketName)(this.address),
             objectName: file.name,
             creator: this.address,
             visibility: isPrivate
@@ -206,7 +212,7 @@ export class GreenFieldClient {
             },
         });
         const uploadRes = await this.client.object.uploadObject({
-            bucketName: encodeAddrToBucketName(this.address),
+            bucketName: (0, helper_1.encodeAddrToBucketName)(this.address),
             objectName: file.name,
             body: file,
             txnHash: transactionHash,
@@ -278,7 +284,7 @@ export class GreenFieldClient {
     objectName, bucketName = BUCKET_NAME) {
         if (!this.address)
             return;
-        const sp = await selectSp(this.client);
+        const sp = await (0, exports.selectSp)(this.client);
         const objInfo = await this.client.object.getObjectMeta({
             bucketName,
             objectName,
@@ -292,14 +298,14 @@ export class GreenFieldClient {
     provider, objectName) {
         if (!this.address)
             return;
-        const offChainData = await getOffchainAuthKeys(this.address, provider, this.client, this.chainId);
+        const offChainData = await (0, helper_1.getOffchainAuthKeys)(this.address, provider, this.client, this.chainId);
         if (!offChainData) {
             console.log("No offchain, please create offchain pairs first");
             alert("No offchain, please create offchain pairs first");
             return;
         }
         const res = await this.client.object.getObject({
-            bucketName: encodeAddrToBucketName(this.address),
+            bucketName: (0, helper_1.encodeAddrToBucketName)(this.address),
             objectName,
         }, {
             type: "EDDSA",
@@ -316,7 +322,7 @@ export class GreenFieldClient {
         if (!this.address && !address)
             return;
         const tx = await this.client.object.updateObjectInfo({
-            bucketName: encodeAddrToBucketName(this.address || address),
+            bucketName: (0, helper_1.encodeAddrToBucketName)(this.address || address),
             objectName,
             operator: this.address || address,
             visibility,
@@ -339,10 +345,10 @@ export class GreenFieldClient {
             return;
         const statement = {
             effect,
-            actions: [PermissionTypes.ActionType.ACTION_GET_OBJECT],
+            actions: [greenfield_js_sdk_1.PermissionTypes.ActionType.ACTION_GET_OBJECT],
             resources: [],
         };
-        const tx = await this.client.object.putObjectPolicy(encodeAddrToBucketName(this.address), objectName, {
+        const tx = await this.client.object.putObjectPolicy((0, helper_1.encodeAddrToBucketName)(this.address), objectName, {
             operator: this.address,
             statements: [statement],
             principal: {
@@ -364,4 +370,5 @@ export class GreenFieldClient {
         return res;
     }
 }
+exports.GreenFieldClient = GreenFieldClient;
 //# sourceMappingURL=greenFieldClient.js.map
