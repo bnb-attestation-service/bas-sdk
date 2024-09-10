@@ -2,11 +2,23 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BucketManager = void 0;
 const tslib_1 = require("tslib");
+//@ts-ignore
+const bsc_cross_greenfield_sdk_1 = require("@bnb-chain/bsc-cross-greenfield-sdk");
+const types_1 = require("@bnb-chain/greenfield-cosmos-types/greenfield/permission/types");
+const types_2 = require("@bnb-chain/greenfield-cosmos-types/greenfield/resource/types");
+const common_1 = require("@bnb-chain/greenfield-cosmos-types/greenfield/permission/common");
 const baseContract_1 = require("../utils/baseContract");
 const manager_abi_json_1 = tslib_1.__importDefault(require("../abi/manager.abi.json"));
+const crossChain_1 = require("./crossChain");
+const utils_1 = require("../utils");
 class BucketManager extends baseContract_1.BaseContract {
+    crosschain;
     constructor(contractAddress, privateKey) {
         super(manager_abi_json_1.default, contractAddress, privateKey);
+        this.crosschain = new crossChain_1.CrossChain(privateKey);
+    }
+    async getRelayFees() {
+        return this.crosschain.getRelayFees();
     }
     /*
     Methods:
@@ -20,7 +32,7 @@ class BucketManager extends baseContract_1.BaseContract {
     - Get buckets created by manager contract  (`called by user`)
     - Get whether the manager contract create a user bucket (`called by user`)
     */
-    async createUserBucket(executorData) {
+    async _createUserBucket(executorData) {
         return await this.write({
             functionName: "createUserBucket",
             args: [executorData],
@@ -32,13 +44,13 @@ class BucketManager extends baseContract_1.BaseContract {
             args: [name, schemaId, executorData],
         });
     }
-    async createUserPolicy(data) {
+    async _createUserPolicy(data) {
         return await this.write({
             functionName: "createUserPolicy",
             args: [data],
         });
     }
-    async createSchemaPolicy(name, schemaId, createPolicyData) {
+    async _createSchemaPolicy(name, schemaId, createPolicyData) {
         return await this.write({
             functionName: "createSchemaPolicy",
             args: [name, schemaId, createPolicyData],
@@ -73,6 +85,114 @@ class BucketManager extends baseContract_1.BaseContract {
             functionName: "basBucket",
             args: [],
         });
+    }
+    async callbackGasLimit() {
+        return await this.read({
+            functionName: "callbackGasLimit",
+            args: [],
+        });
+    }
+    async getName(name, schemaId) {
+        return await this.read({
+            functionName: "getName",
+            args: [name, schemaId],
+        });
+    }
+    async createUserBucket(address) {
+        const callbackGasLimit = (await this.callbackGasLimit());
+        console.log({ callbackGasLimit });
+        const userBucketName = await this.getName("", utils_1.ZERO_BYTES32);
+        const userDataSetBucketFlowRateLimit = bsc_cross_greenfield_sdk_1.ExecutorMsg.getSetBucketFlowRateLimitParams({
+            bucketName: userBucketName,
+            bucketOwner: address,
+            operator: address,
+            paymentAddress: address,
+            flowRateLimit: "100000000000000000",
+        });
+        // TODO: use decorator to get fees
+        const fees = await this.getRelayFees();
+        const gasPrice = 10000000000n;
+        let userValue = 0n;
+        if (Array.isArray(fees)) {
+            const [relayFee, ackRelayFee] = fees;
+            userValue = 2n * relayFee + ackRelayFee + callbackGasLimit * gasPrice;
+        }
+        else {
+            throw new Error("get relay fees error");
+        }
+        console.log({ userValue });
+        const userExecutorData = userDataSetBucketFlowRateLimit[1];
+        return this._createUserBucket(userExecutorData);
+    }
+    async createSchemabucket(address, name, schemaId) {
+        const [relayFee, ackRelayFee] = await this.getRelayFees();
+        const gasPrice = 10000000000n;
+        const callbackGasLimit = (await this.callbackGasLimit());
+        const schemaBucketName = await this.getName(name, schemaId);
+        const schemaDataSetBucketFlowRateLimit = bsc_cross_greenfield_sdk_1.ExecutorMsg.getSetBucketFlowRateLimitParams({
+            bucketName: schemaBucketName,
+            bucketOwner: address,
+            operator: address,
+            paymentAddress: address,
+            flowRateLimit: "100000000000000000",
+        });
+        const schemaExecutorData = schemaDataSetBucketFlowRateLimit[1];
+        const schemaValue = 2n * relayFee + ackRelayFee + callbackGasLimit * gasPrice;
+        console.log({ schemaValue });
+        return this.createSchemaBucket(name, schemaId, schemaExecutorData);
+    }
+    async createUserPolicy(_bucketManager, eoa) {
+        // const bucketName = await this.getName("", ZERO_BYTES32);
+        const [relayFee, ackRelayFee] = await this.getRelayFees();
+        const gasPrice = 10000000000n;
+        const callbackGasLimit = (await this.callbackGasLimit());
+        const userValue = relayFee + ackRelayFee + callbackGasLimit * gasPrice;
+        // TODO: bucketId ???
+        const bucketId = "";
+        const policyDataToAllowUserOperateBucket = types_1.Policy.encode({
+            id: "0",
+            resourceId: bucketId,
+            resourceType: types_2.ResourceType.RESOURCE_TYPE_BUCKET,
+            statements: [
+                {
+                    effect: common_1.Effect.EFFECT_ALLOW,
+                    actions: [common_1.ActionType.ACTION_CREATE_OBJECT],
+                    resources: [],
+                },
+            ],
+            principal: {
+                type: common_1.PrincipalType.PRINCIPAL_TYPE_GNFD_ACCOUNT,
+                value: eoa,
+            },
+        }).finish();
+        console.log({ value: userValue });
+        // TODO: value
+        return this._createUserPolicy(policyDataToAllowUserOperateBucket);
+    }
+    async createSchemaPolicy(_bucketManager, eoa, name, schemaId) {
+        // const bucketName = await this.getName(name, schemaId);
+        // TODO: bucketId ???
+        const bucketId = "";
+        const [relayFee, ackRelayFee] = await this.getRelayFees();
+        const policyDataToAllowUserOperateBucket = types_1.Policy.encode({
+            id: "0",
+            resourceId: bucketId,
+            resourceType: types_2.ResourceType.RESOURCE_TYPE_BUCKET,
+            statements: [
+                {
+                    effect: common_1.Effect.EFFECT_ALLOW,
+                    actions: [common_1.ActionType.ACTION_CREATE_OBJECT],
+                    resources: [],
+                },
+            ],
+            principal: {
+                type: common_1.PrincipalType.PRINCIPAL_TYPE_GNFD_ACCOUNT,
+                value: eoa,
+            },
+        }).finish();
+        console.log({ value: relayFee + ackRelayFee });
+        // TODO: value
+        return this._createSchemaPolicy(name, schemaId, policyDataToAllowUserOperateBucket);
     }
 }
 exports.BucketManager = BucketManager;

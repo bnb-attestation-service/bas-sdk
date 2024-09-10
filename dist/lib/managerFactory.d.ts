@@ -1,7 +1,10 @@
 import { BaseContract } from "../utils/baseContract";
 import { Hex } from "viem";
-import { BigNumberish, BytesLike } from "ethers";
+import { BytesLike } from "ethers";
 export declare class ManagerFactory extends BaseContract {
+    private crosschain;
     constructor(contractAddress: Hex, privateKey?: Hex);
-    deployManagerContract(amnt: BigNumberish, salt: BytesLike): Promise<`0x${string}`>;
+    private deployManagerContract;
+    getManagerAddress(salt: BytesLike): Promise<unknown>;
+    deployBucketManager(saltStr: string): Promise<unknown>;
 }
