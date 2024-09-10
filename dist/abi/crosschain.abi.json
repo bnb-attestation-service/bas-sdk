@@ -1,0 +1,84 @@
+[
+    {
+        "inputs": [],
+        "name": "callbackGasPrice",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getRelayFees",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "relayFee",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "minAckRelayFee",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes",
+                "name": "_multiMessagePayload",
+                "type": "bytes"
+            },
+            {
+                "internalType": "uint8",
+                "name": "_packageType",
+                "type": "uint8"
+            },
+            {
+                "internalType": "uint64",
+                "name": "_multiMessageSequence",
+                "type": "uint64"
+            }
+        ],
+        "name": "handleAckPackageFromMultiMessage",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint8",
+                "name": "channelId",
+                "type": "uint8"
+            },
+            {
+                "internalType": "bytes",
+                "name": "msgBytes",
+                "type": "bytes"
+            },
+            {
+                "internalType": "uint256",
+                "name": "relayFee",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "ackRelayFee",
+                "type": "uint256"
+            }
+        ],
+        "name": "sendSynPackage",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+]
