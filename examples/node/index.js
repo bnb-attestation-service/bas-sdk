@@ -50,11 +50,7 @@ async function main() {
   // const managers = await bucketRegistry.getControlledManagers('0x471543A3bd04486008c8a38c5C00543B73F1769e');
   // console.log({ fees, managers });
 
-  const create = await manager.createSchemabucket(
-    "0x471543A3bd04486008c8a38c5C00543B73F1769e",
-    'test1',
-    '0xacc308075dabd756f3806f0f2a0d919d12b13597ba4791de96283aa646c2c5b5'
-  );
+  const create = await factory.deployBucketManager("test-salt");
 
   console.log({ create });
 }

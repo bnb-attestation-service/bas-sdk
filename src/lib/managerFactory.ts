@@ -16,10 +16,11 @@ export class ManagerFactory extends BaseContract {
   Mothods:
     - Deploy manager contract (called by user)
   */
-  private async deployManagerContract(amnt: BigNumberish, salt: BytesLike) {
+  private async deployManagerContract(amnt: BigNumberish, salt: BytesLike, value: bigint) {
     return await this.write({
       functionName: "deploy",
       args: [amnt, salt],
+      value,
     });
   }
 
@@ -46,10 +47,9 @@ export class ManagerFactory extends BaseContract {
     const _bucketManager = await this.getManagerAddress(salt);
     console.log("deploy manager:", _bucketManager);
 
-    // TODO: arguments not match
-    const resp = await this.deployManagerContract(transferOutAmt, salt);
+    const resp = await this.deployManagerContract(transferOutAmt, salt, topAmnt);
     console.log(`create bucket manager contract in tx ${resp}`);
-    console.log(_bucketManager);
+    // console.log(_bucketManager);
     return _bucketManager;
   }
 }

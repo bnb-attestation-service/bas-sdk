@@ -63,6 +63,7 @@ class BaseContract {
             args: params.args,
             account: this.walletClient.account || "0x",
             chain: this.chain,
+            value: params.value,
         });
         const receipt = await this.publicClient.waitForTransactionReceipt({
             hash,

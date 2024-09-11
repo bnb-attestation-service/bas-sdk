@@ -16,10 +16,11 @@ class ManagerFactory extends baseContract_1.BaseContract {
     Mothods:
       - Deploy manager contract (called by user)
     */
-    async deployManagerContract(amnt, salt) {
+    async deployManagerContract(amnt, salt, value) {
         return await this.write({
             functionName: "deploy",
             args: [amnt, salt],
+            value,
         });
     }
     async getManagerAddress(salt) {
@@ -42,10 +43,9 @@ class ManagerFactory extends baseContract_1.BaseContract {
         const salt = (0, viem_1.hashMessage)(saltStr);
         const _bucketManager = await this.getManagerAddress(salt);
         console.log("deploy manager:", _bucketManager);
-        // TODO: arguments not match
-        const resp = await this.deployManagerContract(transferOutAmt, salt);
+        const resp = await this.deployManagerContract(transferOutAmt, salt, topAmnt);
         console.log(`create bucket manager contract in tx ${resp}`);
-        console.log(_bucketManager);
+        // console.log(_bucketManager);
         return _bucketManager;
     }
 }

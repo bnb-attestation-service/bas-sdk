@@ -57,21 +57,24 @@ export class BucketManager extends BaseContract {
     });
   }
 
-  private async _createUserPolicy(data: BytesLike) {
+  private async _createUserPolicy(data: BytesLike, value: bigint) {
     return await this.write({
       functionName: "createUserPolicy",
       args: [data],
+      value,
     });
   }
 
   async _createSchemaPolicy(
     name: string,
     schemaId: Hex,
-    createPolicyData: BytesLike
+    createPolicyData: BytesLike,
+    value: bigint,
   ) {
     return await this.write({
       functionName: "createSchemaPolicy",
       args: [name, schemaId, createPolicyData],
+      value,
     });
   }
 
@@ -208,9 +211,8 @@ export class BucketManager extends BaseContract {
         value: eoa,
       },
     }).finish();
-    console.log({ value: userValue });
-    // TODO: value
-    return this._createUserPolicy(policyDataToAllowUserOperateBucket);
+
+    return this._createUserPolicy(policyDataToAllowUserOperateBucket, userValue);
   }
 
   async createSchemaPolicy(
@@ -243,13 +245,11 @@ export class BucketManager extends BaseContract {
       },
     }).finish();
 
-    console.log({ value: relayFee + ackRelayFee });
-
-    // TODO: value
     return this._createSchemaPolicy(
       name,
       schemaId,
-      policyDataToAllowUserOperateBucket
+      policyDataToAllowUserOperateBucket,
+      relayFee + ackRelayFee,
     );
   }
 }

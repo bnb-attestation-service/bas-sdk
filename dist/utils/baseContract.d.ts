@@ -2,6 +2,7 @@ import { Hex, Hash } from "viem";
 export interface CallContractParams {
     functionName: string;
     args: unknown[];
+    value?: bigint;
 }
 export declare class BaseContract {
     private abi;

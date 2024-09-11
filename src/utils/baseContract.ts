@@ -14,6 +14,7 @@ import { bscTestnet } from "viem/chains";
 export interface CallContractParams {
   functionName: string;
   args: unknown[];
+  value?: bigint;
 }
 
 // Decorator to try catch error from method, and pass an argument to define the error message
@@ -88,6 +89,7 @@ export class BaseContract {
       args: params.args,
       account: this.walletClient.account || "0x",
       chain: this.chain,
+      value: params.value,
     });
 
     const receipt = await this.publicClient.waitForTransactionReceipt({

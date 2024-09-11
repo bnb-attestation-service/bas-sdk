@@ -8,7 +8,7 @@ export declare class BucketManager extends BaseContract {
     private _createUserBucket;
     createSchemaBucket(name: string, schemaId: Hex, executorData: BytesLike): Promise<`0x${string}`>;
     private _createUserPolicy;
-    _createSchemaPolicy(name: string, schemaId: Hex, createPolicyData: BytesLike): Promise<`0x${string}`>;
+    _createSchemaPolicy(name: string, schemaId: Hex, createPolicyData: BytesLike, value: bigint): Promise<`0x${string}`>;
     transferOwnership(address: Hex): Promise<`0x${string}`>;
     topUpBNB(amount: BigNumberish): Promise<`0x${string}`>;
     executeGreenfieldCommand(msgTypes: number[], msgData: BytesLike[]): Promise<`0x${string}`>;

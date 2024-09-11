@@ -44,16 +44,18 @@ class BucketManager extends baseContract_1.BaseContract {
             args: [name, schemaId, executorData],
         });
     }
-    async _createUserPolicy(data) {
+    async _createUserPolicy(data, value) {
         return await this.write({
             functionName: "createUserPolicy",
             args: [data],
+            value,
         });
     }
-    async _createSchemaPolicy(name, schemaId, createPolicyData) {
+    async _createSchemaPolicy(name, schemaId, createPolicyData, value) {
         return await this.write({
             functionName: "createSchemaPolicy",
             args: [name, schemaId, createPolicyData],
+            value,
         });
     }
     async transferOwnership(address) {
@@ -165,9 +167,7 @@ class BucketManager extends baseContract_1.BaseContract {
                 value: eoa,
             },
         }).finish();
-        console.log({ value: userValue });
-        // TODO: value
-        return this._createUserPolicy(policyDataToAllowUserOperateBucket);
+        return this._createUserPolicy(policyDataToAllowUserOperateBucket, userValue);
     }
     async createSchemaPolicy(_bucketManager, eoa, name, schemaId) {
         // const bucketName = await this.getName(name, schemaId);
@@ -190,9 +190,7 @@ class BucketManager extends baseContract_1.BaseContract {
                 value: eoa,
             },
         }).finish();
-        console.log({ value: relayFee + ackRelayFee });
-        // TODO: value
-        return this._createSchemaPolicy(name, schemaId, policyDataToAllowUserOperateBucket);
+        return this._createSchemaPolicy(name, schemaId, policyDataToAllowUserOperateBucket, relayFee + ackRelayFee);
     }
 }
 exports.BucketManager = BucketManager;
