@@ -1,8 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GreenFieldClient = exports.VisibilityType = exports.selectSp = exports.getAllSps = exports.getSps = void 0;
+const tslib_1 = require("tslib");
 const greenfield_js_sdk_1 = require("@bnb-chain/greenfield-js-sdk");
 const helper_1 = require("./helper");
+const long_1 = tslib_1.__importDefault(require("long"));
 const getSps = async (client) => {
     const sps = await client.sp.getStorageProviders();
     const finalSps = (sps ?? []).filter((v) => v.endpoint.includes("nodereal"));
@@ -53,9 +55,7 @@ class GreenFieldClient {
     chainId = null;
     address = null;
     constructor(url, chainId) {
-        this.client = greenfield_js_sdk_1.Client.create(url, chainId, {
-            zkCryptoUrl: "https://unpkg.com/@bnb-chain/greenfield-zk-crypto@0.0.3/dist/node/zk-crypto.wasm",
-        });
+        this.client = greenfield_js_sdk_1.Client.create(url, chainId);
     }
     init(address, chainId) {
         console.log("init", address, chainId);
@@ -79,19 +79,16 @@ class GreenFieldClient {
             const createBucketTx = await this.client.bucket.createBucket({
                 bucketName,
                 creator: this.address,
-                visibility: "VISIBILITY_TYPE_PUBLIC_READ",
-                chargedReadQuota: "0",
-                spInfo: {
-                    primarySpAddress: spInfo.primarySpAddress,
-                },
+                visibility: VisibilityType.VISIBILITY_TYPE_PUBLIC_READ,
+                chargedReadQuota: long_1.default.fromString("0"),
+                // spInfo: {
+                primarySpAddress: spInfo.primarySpAddress,
+                // },
                 paymentAddress: this.address,
-            }, {
-                // type: 'ECDSA',
-                // privateKey: ACCOUNT_PRIVATEKEY,
-                type: "EDDSA",
-                domain: window.location.origin,
-                seed: offChainData.seedString,
-                address: this.address,
+                // type: "EDDSA",
+                // domain: window.location.origin,
+                // seed: offChainData.seedString,
+                // address: this.address,
             });
             console.log({ createBucketTx });
             const simulateInfo = await createBucketTx.simulate({
@@ -181,17 +178,17 @@ class GreenFieldClient {
             objectName: file.name,
             creator: this.address,
             visibility: isPrivate
-                ? "VISIBILITY_TYPE_PRIVATE"
-                : "VISIBILITY_TYPE_PUBLIC_READ",
-            fileType: "json",
-            redundancyType: "REDUNDANCY_EC_TYPE",
-            contentLength: contentLength,
-            expectCheckSums: JSON.parse(expectCheckSums),
-        }, {
-            type: "EDDSA",
-            domain: window.location.origin,
-            seed: offChainData.seedString,
-            address: this.address,
+                ? VisibilityType.VISIBILITY_TYPE_PRIVATE
+                : VisibilityType.VISIBILITY_TYPE_PUBLIC_READ,
+            contentType: "json",
+            redundancyType: greenfield_js_sdk_1.RedundancyType.REDUNDANCY_EC_TYPE,
+            payloadSize: contentLength,
+            expectChecksums: JSON.parse(expectCheckSums),
+            expectSecondarySpAddresses: [],
+            // type: "EDDSA",
+            // domain: window.location.origin,
+            // seed: offChainData.seedString,
+            // address: this.address,
         });
         console.log({ tx });
         const simulateInfo = await tx.simulate({

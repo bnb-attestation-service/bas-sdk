@@ -1,9 +1,14 @@
 import { Hex } from "viem";
 import { BigNumberish, BytesLike } from "ethers";
 import { BaseContract } from "../utils/baseContract";
+export interface GreenFieldConfig {
+    rpcUrl: string;
+    chainId: string;
+}
 export declare class BucketManager extends BaseContract {
     private crosschain;
-    constructor(contractAddress: Hex, privateKey?: Hex);
+    private greenfieldClient;
+    constructor(contractAddress: Hex, privateKey: Hex, greenFieldConfig: GreenFieldConfig);
     private getRelayFees;
     private _createUserBucket;
     createSchemaBucket(name: string, schemaId: Hex, executorData: BytesLike): Promise<`0x${string}`>;

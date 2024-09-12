@@ -1,5 +1,5 @@
 import { Client, PermissionTypes } from "@bnb-chain/greenfield-js-sdk";
-import { StorageProvider } from '@bnb-chain/greenfield-cosmos-types/greenfield/sp/types';
+import { StorageProvider } from "@bnb-chain/greenfield-cosmos-types/greenfield/sp/types";
 export declare const getSps: (client: Client) => Promise<StorageProvider[]>;
 export declare const getAllSps: (client: Client) => Promise<{
     address: string;
@@ -32,7 +32,7 @@ export declare class GreenFieldClient {
     createObject(provider: any, file: File, isPrivate?: boolean): Promise<import("@bnb-chain/greenfield-js-sdk").SpResponse<null> | undefined>;
     mirrorObject(provider: any, objectInfo: any): Promise<void>;
     deleteObject(objectInfo: any): Promise<void>;
-    getObjectInfo(objectName: string, bucketName?: string): Promise<import("@bnb-chain/greenfield-js-sdk").SpResponse<GetObjectMetaResponse> | undefined>;
+    getObjectInfo(objectName: string, bucketName?: string): Promise<import("@bnb-chain/greenfield-js-sdk").SpResponse<import("@bnb-chain/greenfield-js-sdk").GetObjectMetaResponse> | undefined>;
     getObject(provider: any, objectName: string): Promise<string | null | undefined>;
     updateObjectVisibility(objectName: string, visibility: VisibilityType, address: string): Promise<void>;
     updateObjectPolicy(objectName: string, effect: PermissionTypes.Effect, principalType: PermissionTypes.PrincipalType, principalValue: string): Promise<import("@cosmjs/stargate").DeliverTxResponse | undefined>;

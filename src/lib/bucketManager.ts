@@ -14,13 +14,20 @@ import { BaseContract } from "../utils/baseContract";
 import abi from "../abi/manager.abi.json";
 import { CrossChain } from "./crossChain";
 import { ZERO_BYTES32 } from "../utils";
+import { Client } from '@bnb-chain/greenfield-js-sdk';
 
+export interface GreenFieldConfig {
+  rpcUrl: string;
+  chainId: string;
+}
 export class BucketManager extends BaseContract {
   private crosschain: CrossChain;
+  private greenfieldClient: Client;
 
-  constructor(contractAddress: Hex, privateKey?: Hex) {
+  constructor(contractAddress: Hex, privateKey: Hex, greenFieldConfig: GreenFieldConfig) {
     super(abi, contractAddress, privateKey);
     this.crosschain = new CrossChain(privateKey);
+    this.greenfieldClient = Client.create(greenFieldConfig.rpcUrl, greenFieldConfig.chainId);
   }
 
   private async getRelayFees() {
@@ -121,7 +128,7 @@ export class BucketManager extends BaseContract {
   }
 
   async getName(name: string, schemaId: Hex) {
-    return await this.read({
+    return this.read({
       functionName: "getName",
       args: [name, schemaId],
     });
@@ -192,8 +199,9 @@ export class BucketManager extends BaseContract {
 
     const userValue = relayFee + ackRelayFee + callbackGasLimit * gasPrice;
 
-    // TODO: bucketId ???
-    const bucketId = "";
+    const bucketName = (await this.getName("",ZERO_BYTES32)) as string;
+    const bucketInfo = await this.greenfieldClient.bucket.getBucketMeta({ bucketName });
+    const bucketId = bucketInfo.body!.GfSpGetBucketMetaResponse.Bucket.BucketInfo.Id;
 
     const policyDataToAllowUserOperateBucket = Policy.encode({
       id: "0",
@@ -223,8 +231,9 @@ export class BucketManager extends BaseContract {
   ) {
     // const bucketName = await this.getName(name, schemaId);
 
-    // TODO: bucketId ???
-    const bucketId = "";
+    const bucketName = (await this.getName(name, schemaId)) as string;
+    const bucketInfo = await this.greenfieldClient.bucket.getBucketMeta({ bucketName });
+    const bucketId = bucketInfo.body!.GfSpGetBucketMetaResponse.Bucket.BucketInfo.Id;
 
     const [relayFee, ackRelayFee] = await this.getRelayFees();
 

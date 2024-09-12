@@ -11,11 +11,14 @@ const baseContract_1 = require("../utils/baseContract");
 const manager_abi_json_1 = tslib_1.__importDefault(require("../abi/manager.abi.json"));
 const crossChain_1 = require("./crossChain");
 const utils_1 = require("../utils");
+const greenfield_js_sdk_1 = require("@bnb-chain/greenfield-js-sdk");
 class BucketManager extends baseContract_1.BaseContract {
     crosschain;
-    constructor(contractAddress, privateKey) {
+    greenfieldClient;
+    constructor(contractAddress, privateKey, greenFieldConfig) {
         super(manager_abi_json_1.default, contractAddress, privateKey);
         this.crosschain = new crossChain_1.CrossChain(privateKey);
+        this.greenfieldClient = greenfield_js_sdk_1.Client.create(greenFieldConfig.rpcUrl, greenFieldConfig.chainId);
     }
     async getRelayFees() {
         return this.crosschain.getRelayFees();
@@ -95,7 +98,7 @@ class BucketManager extends baseContract_1.BaseContract {
         });
     }
     async getName(name, schemaId) {
-        return await this.read({
+        return this.read({
             functionName: "getName",
             args: [name, schemaId],
         });
@@ -149,8 +152,9 @@ class BucketManager extends baseContract_1.BaseContract {
         const gasPrice = 10000000000n;
         const callbackGasLimit = (await this.callbackGasLimit());
         const userValue = relayFee + ackRelayFee + callbackGasLimit * gasPrice;
-        // TODO: bucketId ???
-        const bucketId = "";
+        const bucketName = (await this.getName("", utils_1.ZERO_BYTES32));
+        const bucketInfo = await this.greenfieldClient.bucket.getBucketMeta({ bucketName });
+        const bucketId = bucketInfo.body.GfSpGetBucketMetaResponse.Bucket.BucketInfo.Id;
         const policyDataToAllowUserOperateBucket = types_1.Policy.encode({
             id: "0",
             resourceId: bucketId,
@@ -171,8 +175,9 @@ class BucketManager extends baseContract_1.BaseContract {
     }
     async createSchemaPolicy(_bucketManager, eoa, name, schemaId) {
         // const bucketName = await this.getName(name, schemaId);
-        // TODO: bucketId ???
-        const bucketId = "";
+        const bucketName = (await this.getName(name, schemaId));
+        const bucketInfo = await this.greenfieldClient.bucket.getBucketMeta({ bucketName });
+        const bucketId = bucketInfo.body.GfSpGetBucketMetaResponse.Bucket.BucketInfo.Id;
         const [relayFee, ackRelayFee] = await this.getRelayFees();
         const policyDataToAllowUserOperateBucket = types_1.Policy.encode({
             id: "0",

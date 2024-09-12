@@ -29,10 +29,11 @@
   "dependencies": {
     "@bnb-chain/bsc-cross-greenfield-sdk": "^0.0.3",
     "@bnb-chain/greenfield-cosmos-types": "^0.4.0",
-    "@bnb-chain/greenfield-js-sdk": "0.2.5-alpha.9",
+    "@bnb-chain/greenfield-js-sdk": "^2.0.1",
     "@bnb-chain/greenfield-zk-crypto": "^1.0.0",
     "@ethereum-attestation-service/eas-sdk": "1.2.0-beta.0",
     "ethers": "^6.13.2",
+    "long": "^5.2.3",
     "viem": "^1.21.0"
   },
   "devDependencies": {
